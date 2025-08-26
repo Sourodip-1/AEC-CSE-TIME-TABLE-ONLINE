@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>College Portal - Timetable &amp; Students</title>
+<style>
+        /* Reset default styles for consistency */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body styling with a modern gradient background */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+            color: #1f2937;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header with a sleek, modern look */
+        header {
+            background: linear-gradient(to right, #1e3a8a, #3b82f6);
+            color: #ffffff;
+            text-align: center;
+            padding: 0.2rem;
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* Navigation with flexbox for responsiveness */
+        nav {
+            display: flex;
+            justify-content: center;
+            background: #1037b9;
+            padding: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        nav button {
+            flex: 1;
+            max-width: 200px;
+            padding: 0.75rem;
+            border: none;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            border-radius: 6px;
+            margin: 0 0.5rem;
+        }
+
+        nav button:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+        }
+
+        nav button.active {
+            background: #db2777;
+            transform: translateY(0);
+        }
+
+        /* Section styling for content containers */
+        section {
+            display: none;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            transition: opacity 0.3s ease;
+        }
+
+        section.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Headings with modern typography */
+        h2,
+        h3 {
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* Table styling with improved readability */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: #2563eb;
+            color: #ffffff;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        tr:hover {
+            background: #e0f2fe;
+            transition: background 0.2s ease;
+        }
+
+        /* Input styling with a clean, modern look */
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Current class highlight with animation */
+        .current-class {
+            background: #d1fae5 !important;
+            font-weight: 600;
+            color: #065f46;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .class-status {
+            font-size: 0.85rem;
+            font-weight: 400;
+            display: block;
+            margin-top: 0.5rem;
+            color: #4b5563;
+        }
+
+        /* Button styling for actions like marking attendance */
+        button {
+            padding: 0.75rem 1.5rem;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            nav button {
+                margin: 0.25rem 0;
+                max-width: none;
+            }
+
+            section {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            header {
+                font-size: 1.5rem;
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th,
+            td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Additional styling for student portal section */
+        #student-portal {
+            padding: 2rem;
+        }
+
+        #student-portal button {
+            margin: 0.5rem 0;
+        }
+
+        #student-portal textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        /* Hover effect for student table rows */
+        #studentTable tbody tr {
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        #studentTable tbody tr:hover {
+            background: #e0f2fe;
+        }
+    </style>
+</head>
+<body>
+<header>AEC CSE STUDENTS 25-29 TimeTable</header>
+<nav>
+<button onclick="showTab('timetable')">Timetable</button>
+<button class="active" onclick="showTab('students')">Students</button>
+</nav>
+<section id="timetable">
+<h2>1st Semester Timetable</h2>
+<h3>Section I (Roll 1–90 + CSBS)</h3>
+<table id="timetableSection1">
+<thead>
+<tr>
+<th>Theory</th>
+<th>09:50-10:30</th>
+<th>10:40-11:20</th>
+<th>11:40-12:20</th>
+<th>12:40-01:20</th>
+<th>01:40-02:20</th>
+<th>02:30-03:00</th>
+<th>03:00-03:40</th>
+<th>03:40-04:30</th>
+<th>04:30-05:30</th>
+</tr>
+</thead>
+<tbody>
+<tr id="row-Mon">
+<td>Mon</td>
+<td></td>
+<td></td>
+<td>CS 101</td>
+<td>PH 101 SC</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr id="row-Tue">
+<td>Tue</td>
+<td></td>
+<td>HU 102 CC</td>
+<td>M 101 PRD</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr id="row-Wed">
+<td>Wed</td>
+<td></td>
+<td>M 101 PRD</td>
+<td>HU 101 KKP</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr id="row-Thu">
+<td>Thu</td>
+<td></td>
+<td>CS 101</td>
+<td>PH 101 SC</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr id="row-Fri">
+<td>Fri</td>
+<td></td>
+<td></td>
+<td>HU 101 KKP</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td colspan="10">Division: CSE (Roll#1–90) + CSBS</td>
+</tr>
+</tfoot>
+</table>
+<h3>Section II (CSE + AI/ML + IoT + CST)</h3>
+<table id="timetableSection2">
+<thead>
+<tr>
+<th>Theory</th>
+<th>09:50-10:30</th>
+<th>10:40-11:20</th>
+<th>11:40-12:20</th>
+<th>12:40-01:20</th>
+<th>01:40-02:20</th>
+<th>02:30-03:00</th>
+<th>03:00-03:40</th>
+<th>03:40-04:30</th>
+<th>04:30-05:30</th>
+</tr>
+</thead>
+<tbody>
+<tr id="row-Mon">
+<td>Mon</td>
+<td></td>
+<td>CS 101</td>
+<td>PH 101 RS</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr id="row-Tue">
+<td>Tue</td>
+<td></td>
+<td>HU 101 KKP</td>
+<td></td>
+<td>M 101 AU</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr id="row-Wed">
+<td>Wed</td>
+<td></td>
+<td>M 101 AU</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr id="row-Thu">
+<td>Thu</td>
+<td>HU 101 AD</td>
+<td>CS 101</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr id="row-Fri">
+<td>Fri</td>
+<td></td>
+<td>HU 102 CC</td>
+<td>PH 101 RS</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td colspan="10">Division: CSE (#8130) + CSE (AI/ML) + CSE (IoT) + CST</td>
+</tr>
+</tfoot>
+</table>
+</section>
+<section class="active" id="students">
+<h2>Student List</h2>
+<input id="search" onkeyup="searchStudent()" placeholder="Search by name or roll no..." type="text"/>
+<table id="studentTable">
+<thead>
+<tr>
+<th>Sl. No.</th>
+<th>Name</th>
+<th>Mobile</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>ABHRA KANTI DHIBAR</td>
+<td>918617433247</td>
+</tr>
+<tr>
+<td>2</td>
+<td>ABHRODEEP DUTTA</td>
+<td>918927829214</td>
+</tr>
+<tr>
+<td>3</td>
+<td>ADITYA PRASAD</td>
+<td>7001546900</td>
+</tr>
+<tr>
+<td>4</td>
+<td>ADRIJA CHOUDHURY</td>
+<td>919091723610</td>
+</tr>
+<tr>
+<td>5</td>
+<td>ADRIJA NAG</td>
+<td>918918330393</td>
+</tr>
+<tr>
+<td>6</td>
+<td>ALOK KUMAR</td>
+<td>9006878121</td>
+</tr>
+<tr>
+<td>7</td>
+<td>AMAN KUMAR</td>
+<td>8252362248</td>
+</tr>
+<tr>
+<td>8</td>
+<td>AMAN KUMAR PRASAD</td>
+<td>917586882762</td>
+</tr>
+<tr>
+<td>9</td>
+<td>ANIRUDHA KUNDU</td>
+<td>8759649744</td>
+</tr>
+<tr>
+<td>10</td>
+<td>ANKANA CHATTARAJ</td>
+<td>917319073255</td>
+</tr>
+<tr>
+<td>11</td>
+<td>ANKIT KUMAR PRASAD</td>
+<td>8420372136</td>
+</tr>
+<tr>
+<td>12</td>
+<td>ANKIT KUMAR</td>
+<td>919534731245</td>
+</tr>
+<tr>
+<td>13</td>
+<td>ANKITA MONDAL</td>
+<td>9382953119</td>
+</tr>
+<tr>
+<td>14</td>
+<td>ANKUSH ROY</td>
+<td>918972046829</td>
+</tr>
+<tr>
+<td>15</td>
+<td>ARINDAM GHOSH</td>
+<td>9832026032</td>
+</tr>
+<tr>
+<td>16</td>
+<td>ARITRA BHUI</td>
+<td>919832284981</td>
+</tr>
+<tr>
+<td>17</td>
+<td>ARNAB DUTTA</td>
+<td>919525943873</td>
+</tr>
+<tr>
+<td>18</td>
+<td>ARPAN HALDER</td>
+<td>917864836721</td>
+</tr>
+<tr>
+<td>19</td>
+<td>ASHMITA MAJI</td>
+<td>9564612191</td>
+</tr>
+<tr>
+<td>20</td>
+<td>ATREYA BISWAS</td>
+<td>917031608510</td>
+</tr>
+<tr>
+<td>21</td>
+<td>AYUSHMAN MISHRA</td>
+<td>918809904878</td>
+</tr>
+<tr>
+<td>22</td>
+<td>BIBEK NONIA</td>
+<td>8145872667</td>
+</tr>
+<tr>
+<td>23</td>
+<td>BIKASH MAHATO</td>
+<td>9153577610</td>
+</tr>
+<tr>
+<td>24</td>
+<td>BIPUL KUMAR</td>
+<td>919204960166</td>
+</tr>
+<tr>
+<td>25</td>
+<td>DEBAPRIYA ROY</td>
+<td>917365903746</td>
+</tr>
+<tr>
+<td>26</td>
+<td>DEEP SINHA</td>
+<td>919475635461</td>
+</tr>
+<tr>
+<td>27</td>
+<td>DEEPSHIKHA DEY</td>
+<td>8436826500</td>
+</tr>
+<tr>
+<td>28</td>
+<td>DEEWESH KUMAR SINGH</td>
+<td>9835614569</td>
+</tr>
+<tr>
+<td>29</td>
+<td>DIKSHA RANJAN</td>
+<td>918102827541</td>
+</tr>
+<tr>
+<td>30</td>
+<td>DIPAYAN MITRA</td>
+<td>917602888981</td>
+</tr>
+<tr>
+<td>31</td>
+<td>DIPTANU DAS</td>
+<td>917903154106</td>
+</tr>
+<tr>
+<td>32</td>
+<td>DIPTOMAN DEY</td>
+<td>919064604745</td>
+</tr>
+<tr>
+<td>33</td>
+<td>HARDIK PANDEY</td>
+<td>8250751448</td>
+</tr>
+<tr>
+<td>34</td>
+<td>JAY RAJ SINGH</td>
+<td>919732220965</td>
+</tr>
+<tr>
+<td>35</td>
+<td>JITENDRA KUMAR</td>
+<td>8102012654</td>
+</tr>
+<tr>
+<td>36</td>
+<td>KANCHAN DANGI</td>
+<td>916296101626</td>
+</tr>
+<tr>
+<td>37</td>
+<td>KARAN THAKUR</td>
+<td>919832952740</td>
+</tr>
+<tr>
+<td>38</td>
+<td>KESHAV BHARTI</td>
+<td>9931517575</td>
+</tr>
+<tr>
+<td>39</td>
+<td>KOMAL KUMARI</td>
+<td>918935803304</td>
+</tr>
+<tr>
+<td>40</td>
+<td>KUNAL PAL</td>
+<td>919064512902</td>
+</tr>
+<tr>
+<td>41</td>
+<td>LAXMI KUMARI</td>
+<td>8409079953</td>
+</tr>
+<tr>
+<td>42</td>
+<td>MANAV SALUJA</td>
+<td>919832737364</td>
+</tr>
+<tr>
+<td>43</td>
+<td>MD FAHAN JAHANGIR</td>
+<td>8936845434</td>
+</tr>
+<tr>
+<td>44</td>
+<td>MD KAIF HUSSAIN</td>
+<td>6201835245</td>
+</tr>
+<tr>
+<td>45</td>
+<td>MEHAR ALIYA</td>
+<td>8340479957</td>
+</tr>
+<tr>
+<td>46</td>
+<td>MOHOR BANERJEE</td>
+<td>917001754304</td>
+</tr>
+<tr>
+<td>47</td>
+<td>MOUSAM MONDAL</td>
+<td>7319134246</td>
+</tr>
+<tr>
+<td>48</td>
+<td>NAMRATA SARKAR</td>
+<td>7811030140</td>
+</tr>
+<tr>
+<td>49</td>
+<td>NEEL SARKAR</td>
+<td>7004398864</td>
+</tr>
+<tr>
+<td>50</td>
+<td>NEHA DAS</td>
+<td>9641662620</td>
+</tr>
+<tr>
+<td>51</td>
+<td>PAMELA ADHIKARI</td>
+<td>7001690432</td>
+</tr>
+<tr>
+<td>52</td>
+<td>PANKAJ KUMAR GOPE</td>
+<td>7759817001</td>
+</tr>
+<tr>
+<td>53</td>
+<td>PARITOSH RUIDAS</td>
+<td>919775164625</td>
+</tr>
+<tr>
+<td>54</td>
+<td>PIYUSH ANANAD</td>
+<td>7061250183</td>
+</tr>
+<tr>
+<td>55</td>
+<td>PRATIK SINGH</td>
+<td>919942201212</td>
+</tr>
+<tr>
+<td>56</td>
+<td>PREMJIT MUKHERJEE</td>
+<td>7584914497</td>
+</tr>
+<tr>
+<td>57</td>
+<td>PRITHA PUITANDY</td>
+<td>7029044309</td>
+</tr>
+<tr>
+<td>58</td>
+<td>PRIYANSHU KUMAR GOPE</td>
+<td>917319954342</td>
+</tr>
+<tr>
+<td>59</td>
+<td>RAJ VISHWAKARMA</td>
+<td>917908241783</td>
+</tr>
+<tr>
+<td>60</td>
+<td>RAJORSHI DEY</td>
+<td>919883926570</td>
+</tr>
+<tr>
+<td>61</td>
+<td>RAYAN KAR</td>
+<td>919064575418</td>
+</tr>
+<tr>
+<td>62</td>
+<td>ROCKY BANERJEE</td>
+<td>916296355056</td>
+</tr>
+<tr>
+<td>63</td>
+<td>RUDRA PANDEY</td>
+<td>919204950632</td>
+</tr>
+<tr>
+<td>64</td>
+<td>RUDRANIL BANERJEE</td>
+<td>9851521252</td>
+</tr>
+<tr>
+<td>65</td>
+<td>RUDRANIL PAUL</td>
+<td>918436732094</td>
+</tr>
+<tr>
+<td>66</td>
+<td>SABYASACHI CHATTERJEE</td>
+<td>918116608990</td>
+</tr>
+<tr>
+<td>67</td>
+<td>SAHIL IQBAL</td>
+<td>916295948908</td>
+</tr>
+<tr>
+<td>68</td>
+<td>SANIA SINGH</td>
+<td>917369057339</td>
+</tr>
+<tr>
+<td>69</td>
+<td>SANJEET YADAV</td>
+<td>916200921200</td>
+</tr>
+<tr>
+<td>70</td>
+<td>SANSUDDHI MUKHOPADHYAYA</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>71</td>
+<td>SAPTARSHI MAJI</td>
+<td>8535983734</td>
+</tr>
+<tr>
+<td>72</td>
+<td>SAYAN MISHRA</td>
+<td>7718737797</td>
+</tr>
+<tr>
+<td>73</td>
+<td>SHIVAM MISHRA</td>
+<td>917781027555</td>
+</tr>
+<tr>
+<td>74</td>
+<td>SHREYOSH PAUL</td>
+<td>919732325713</td>
+</tr>
+<tr>
+<td>75</td>
+<td>SHREYOSHI BHATTACHARYA</td>
+<td>917908979486</td>
+</tr>
+<tr>
+<td>76</td>
+<td>SHRISTI DASGUPTA</td>
+<td>7029665726</td>
+</tr>
+<tr>
+<td>77</td>
+<td>SHUVANGI DUTTA</td>
+<td>7679534200</td>
+</tr>
+<tr>
+<td>78</td>
+<td>SIDDHARTH RAJNISH</td>
+<td>919431158875</td>
+</tr>
+<tr>
+<td>79</td>
+<td>SNEHA TIWARI</td>
+<td>918637509268</td>
+</tr>
+<tr>
+<td>80</td>
+<td>SOBHANJEET BHATTACHARYAY</td>
+<td>9434390639</td>
+</tr>
+<tr>
+<td>81</td>
+<td>SOHAM GHOSH</td>
+<td>9932231995</td>
+</tr>
+<tr>
+<td>82</td>
+<td>SOHAM PAUL</td>
+<td>7047233423</td>
+</tr>
+<tr>
+<td>83</td>
+<td>SOURAV KUMAR</td>
+<td>8864051587</td>
+</tr>
+<tr>
+<td>84</td>
+<td>SOURAV PATRA</td>
+<td>8768191959</td>
+</tr>
+<tr>
+<td>85</td>
+<td>SOURODIP ROY</td>
+<td>919732012478</td>
+</tr>
+<tr>
+<td>86</td>
+<td>SOUVIK GHOSH</td>
+<td>7001970716</td>
+</tr>
+<tr>
+<td>87</td>
+<td>SRIJANI CHAKRABORTY</td>
+<td>917637854030</td>
+</tr>
+<tr>
+<td>88</td>
+<td>SRUTI BANERJEE</td>
+<td>919883069352</td>
+</tr>
+<tr>
+<td>89</td>
+<td>SUBHAJEET CHOUDHURY</td>
+<td>6296413127</td>
+</tr>
+<tr>
+<td>90</td>
+<td>SUBHAJEET PRAMANIK</td>
+<td>919123429195</td>
+</tr>
+<tr>
+<td>91</td>
+<td>SUBHROJYOTI DAS</td>
+<td>917076262596</td>
+</tr>
+<tr>
+<td>92</td>
+<td>SUMAN CHATTOPADHYAY</td>
+<td>7501249588</td>
+</tr>
+<tr>
+<td>93</td>
+<td>SURYADEEP DASANDI</td>
+<td>9308345907</td>
+</tr>
+<tr>
+<td>94</td>
+<td>SURYASIS CHATTERJEE</td>
+<td>917679519335</td>
+</tr>
+<tr>
+<td>95</td>
+<td>SUTANNIMA DASGUPTA</td>
+<td>7908403055</td>
+</tr>
+<tr>
+<td>96</td>
+<td>SUYASH SINHA</td>
+<td>917601999072</td>
+</tr>
+<tr>
+<td>97</td>
+<td>TAHSEEN FATMA</td>
+<td>9832737301</td>
+</tr>
+<tr>
+<td>98</td>
+<td>TANISHA PATRA</td>
+<td>8670950620</td>
+</tr>
+<tr>
+<td>99</td>
+<td>TATHAGATA ROY</td>
+<td>919832221018</td>
+</tr>
+<tr>
+<td>100</td>
+<td>VILAKSHNA VIJAYA</td>
+<td>919508498677</td>
+</tr>
+<tr>
+<td>101</td>
+<td>VIVEK KUMAR YADAV</td>
+<td>9931520315</td>
+</tr>
+<tr>
+<td>102</td>
+<td>LUCKY GUPTA</td>
+<td>8670639583</td>
+</tr>
+<tr>
+<td>103</td>
+<td>SAYANTAN MISHRA</td>
+<td>6295098009</td>
+</tr>
+<tr>
+<td>104</td>
+<td>ARITRA GOSWAMI</td>
+<td>8651828180</td>
+</tr>
+<tr>
+<td>105</td>
+<td>RUDRA KESHRI</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>106</td>
+<td>SUJOY DEY</td>
+<td>8327331204</td>
+</tr>
+<tr>
+<td>107</td>
+<td>ISHAN BANERJEE</td>
+<td>6295741640</td>
+</tr>
+<tr>
+<td>108</td>
+<td>SHAINA HUSSAIN</td>
+<td>7908211178</td>
+</tr>
+<tr>
+<td>109</td>
+<td>ARYAN PRAKASH SINGH</td>
+<td>9749799401</td>
+</tr>
+<tr>
+<td>110</td>
+<td>SUYASH SINHA</td>
+<td>917601999072</td>
+</tr>
+<tr>
+<td>111</td>
+<td>TAHSEEN FATMA</td>
+<td>9832737301</td>
+</tr>
+<tr>
+<td>112</td>
+<td>TANISHA PATRA</td>
+<td>8670950620</td>
+</tr>
+<tr>
+<td>113</td>
+<td>TATHAGATA ROY</td>
+<td>919832221018</td>
+</tr>
+<tr>
+<td>114</td>
+<td>VILAKSHNA VIJAYA</td>
+<td>919508498677</td>
+</tr>
+<tr>
+<td>115</td>
+<td>VIVEK KUMAR YADAV</td>
+<td>9931520315</td>
+</tr>
+<tr>
+<td>116</td>
+<td>SAGNIK CHAKRABARTI</td>
+<td>919932720560</td>
+</tr>
+<tr>
+<td>117</td>
+<td>ESHA GUPTA</td>
+<td>6297070488</td>
+</tr>
+<tr>
+<td>118</td>
+<td>ASMITA SAMANTA</td>
+<td>9332090207</td>
+</tr>
+<tr>
+<td>119</td>
+<td>PRIYA KUMARI</td>
+<td>8709884088</td>
+</tr>
+<tr>
+<td>120</td>
+<td>SHREYA SARKAR</td>
+<td>8972421183</td>
+</tr>
+<tr>
+<td>121</td>
+<td>SYED ASAD KAMAL</td>
+<td>9339263114</td>
+</tr>
+<tr>
+<td>122</td>
+<td>PRACHI GOEL</td>
+<td>8918539673</td>
+</tr>
+<tr>
+<td>123</td>
+<td>MOHIT CHOUDHARY</td>
+<td>9851301378</td>
+</tr>
+<tr>
+<td>124</td>
+<td>ARGHA SADHU</td>
+<td>7908274277</td>
+</tr>
+<tr>
+<td>125</td>
+<td>SOUMADIP KAR</td>
+<td>7362914915</td>
+</tr>
+<tr>
+<td>126</td>
+<td>INDRANIL MUKHERJEE</td>
+<td>7811875126</td>
+</tr>
+<tr>
+<td>127</td>
+<td>SRAYAN ACHARJEE</td>
+<td>9832219359</td>
+</tr>
+<tr>
+<td>128</td>
+<td>KRITI SINGH</td>
+<td>9955111343</td>
+</tr>
+<tr>
+<td>129</td>
+<td>KUNAL PAL</td>
+<td>9064512902</td>
+</tr>
+<tr>
+<td>130</td>
+<td>DIPTI KUMARI</td>
+<td>7209375851</td>
+</tr>
+<tr>
+<td>131</td>
+<td>DIPAYAN MITRA</td>
+<td>7602888981</td>
+</tr>
+<tr>
+<td>132</td>
+<td>MOHOR BANERJEE</td>
+<td>7001754304</td>
+</tr>
+<tr>
+<td>133</td>
+<td>SAMIYA SINGH</td>
+<td>7562866654</td>
+</tr>
+<tr>
+<td>134</td>
+<td>ZOHAIB ALI</td>
+<td>8294129356</td>
+</tr>
+<tr>
+<td>135</td>
+<td>CHITRITA MONDAL</td>
+<td>9434578181</td>
+</tr>
+<tr>
+<td>136</td>
+<td>ABHISHIKTA MISHRA</td>
+<td>6294686844</td>
+</tr>
+<tr>
+<td>137</td>
+<td>GURJEET KAUR</td>
+<td>9333133136</td>
+</tr>
+<tr>
+<td>138</td>
+<td>NEHA SHARMA</td>
+<td>9382198097</td>
+</tr>
+<tr>
+<td>139</td>
+<td>RIPU KUMAR</td>
+<td>7324989938</td>
+</tr>
+<tr>
+<td>140</td>
+<td>SOUBHIK DEY</td>
+<td>9679389730</td>
+</tr>
+<tr>
+<td>141</td>
+<td>JOYDEEP BANERJEE</td>
+<td>7908818397</td>
+</tr>
+<tr>
+<td>142</td>
+<td>AVIJEET RAJAK</td>
+<td>9593650048</td>
+</tr>
+<tr>
+<td>143</td>
+<td>SHIVAM PANDEY</td>
+<td>6201914965</td>
+</tr>
+<tr>
+<td>144</td>
+<td>KRISHNENDU MONDAL</td>
+<td>8145121502</td>
+</tr>
+<tr>
+<td>145</td>
+<td>SHUBHANG PANDEY</td>
+<td>9339912066</td>
+</tr>
+<tr>
+<td>146</td>
+<td>KOYEL MAJI</td>
+<td>9434678536</td>
+</tr>
+<tr>
+<td>147</td>
+<td>PRIYANSHU RAJ</td>
+<td>8986315385</td>
+</tr>
+<tr>
+<td>148</td>
+<td>RAMIT SHAW</td>
+<td>6296118385</td>
+</tr>
+<tr>
+<td>149</td>
+<td>PORITOSH RUIDAS</td>
+<td>9775164625</td>
+</tr>
+<tr>
+<td>150</td>
+<td>KANCHAN DANGI</td>
+<td>6296101626</td>
+</tr>
+<tr>
+<td>151</td>
+<td>NAITIK GUPTA</td>
+<td>9153636339</td>
+</tr>
+<tr>
+<td>152</td>
+<td>ARITRA BHUI</td>
+<td>9749112096</td>
+</tr>
+<tr>
+<td>153</td>
+<td>NARAYAN DAS</td>
+<td>8084873987</td>
+</tr>
+<tr>
+<td>154</td>
+<td>SUBHAJEET PRAMANIK</td>
+<td>7061062248</td>
+</tr>
+<tr>
+<td>155</td>
+<td>ANIRBAN KUNDU</td>
+<td>9239222593</td>
+</tr>
+<tr>
+<td>156</td>
+<td>DEEPTANSHU BISWAS</td>
+<td>9832143958</td>
+</tr>
+<tr>
+<td>157</td>
+<td>NEHAL KUMAR KESHRI</td>
+<td>9241435124</td>
+</tr>
+<tr>
+<td>158</td>
+<td>SUBHAM DAS</td>
+<td>9474909086</td>
+</tr>
+<tr>
+<td>159</td>
+<td>SHIVAM KUMAR OJHA</td>
+<td>9341216191</td>
+</tr>
+<tr>
+<td>160</td>
+<td>SATYAM KUMAR OJHA</td>
+<td>9341216191</td>
+</tr>
+<tr>
+<td>161</td>
+<td>SMITA MONDAL</td>
+<td>8840528919</td>
+</tr>
+<tr>
+<td>162</td>
+<td>SUMAN MAJI</td>
+<td>8649800252</td>
+</tr>
+<tr>
+<td>163</td>
+<td>ASHUTOSH KUMAR SINGH</td>
+<td>9631011627</td>
+</tr>
+<tr>
+<td>164</td>
+<td>DITANU DAS</td>
+<td>7903154106</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="student-portal">
+<button onclick="showTab('students')">Back to Students</button>
+<h2 id="student-name"></h2>
+<h3>Your Timetable</h3>
+<div id="student-timetable"></div>
+<h3>Current Status</h3>
+<p>Current Class: <span id="current-class">None</span></p>
+<p>Classes Done Today: <span id="done-today">0</span></p>
+<h3>Attendance Tracker</h3>
+<p>Total Classes Done: <span id="total-classes">0</span></p>
+<p>Classes Attended: <span id="attended-classes">0</span></p>
+<p>Attendance Percentage: <span id="attendance-percentage">0</span>%</p>
+<button onclick="markAttendance()">Mark Present for Current Class</button>
+<h3>Notes</h3>
+<textarea id="student-notes" rows="10" style="width:100%;"></textarea>
+<button onclick="saveNotes()">Save Notes</button>
+</section>
+<script>
+        const studentData = [
+            { roll: 1, name: 'ABHRA KANTI DHIBAR', mobile: '918617433247' },
+            { roll: 2, name: 'ABHRODEEP DUTTA', mobile: '918927829214' },
+            { roll: 3, name: 'ADITYA PRASAD', mobile: '7001546900' },
+            { roll: 4, name: 'ADRIJA CHOUDHURY', mobile: '919091723610' },
+            { roll: 5, name: 'ADRIJA NAG', mobile: '918918330393' },
+            { roll: 6, name: 'ALOK KUMAR', mobile: '9006878121' },
+            { roll: 7, name: 'AMAN KUMAR', mobile: '8252362248' },
+            { roll: 8, name: 'AMAN KUMAR PRASAD', mobile: '917586882762' },
+            { roll: 9, name: 'ANIRUDHA KUNDU', mobile: '8759649744' },
+            { roll: 10, name: 'ANKANA CHATTARAJ', mobile: '917319073255' },
+            { roll: 11, name: 'ANKIT KUMAR PRASAD', mobile: '8420372136' },
+            { roll: 12, name: 'ANKIT KUMAR', mobile: '919534731245' },
+            { roll: 13, name: 'ANKITA MONDAL', mobile: '9382953119' },
+            { roll: 14, name: 'ANKUSH ROY', mobile: '918972046829' },
+            { roll: 15, name: 'ARINDAM GHOSH', mobile: '9832026032' },
+            { roll: 16, name: 'ARITRA BHUI', mobile: '919832284981' },
+            { roll: 17, name: 'ARNAB DUTTA', mobile: '919525943873' },
+            { roll: 18, name: 'ARPAN HALDER', mobile: '917864836721' },
+            { roll: 19, name: 'ASHMITA MAJI', mobile: '9564612191' },
+            { roll: 20, name: 'ATREYA BISWAS', mobile: '917031608510' },
+            { roll: 21, name: 'AYUSHMAN MISHRA', mobile: '918809904878' },
+            { roll: 22, name: 'BIBEK NONIA', mobile: '8145872667' },
+            { roll: 23, name: 'BIKASH MAHATO', mobile: '9153577610' },
+            { roll: 24, name: 'BIPUL KUMAR', mobile: '919204960166' },
+            { roll: 25, name: 'DEBAPRIYA ROY', mobile: '917365903746' },
+            { roll: 26, name: 'DEEP SINHA', mobile: '919475635461' },
+            { roll: 27, name: 'DEEPSHIKHA DEY', mobile: '8436826500' },
+            { roll: 28, name: 'DEEWESH KUMAR SINGH', mobile: '9835614569' },
+            { roll: 29, name: 'DIKSHA RANJAN', mobile: '918102827541' },
+            { roll: 30, name: 'DIPAYAN MITRA', mobile: '917602888981' },
+            { roll: 31, name: 'DIPTANU DAS', mobile: '917903154106' },
+            { roll: 32, name: 'DIPTOMAN DEY', mobile: '919064604745' },
+            { roll: 33, name: 'HARDIK PANDEY', mobile: '8250751448' },
+            { roll: 34, name: 'JAY RAJ SINGH', mobile: '919732220965' },
+            { roll: 35, name: 'JITENDRA KUMAR', mobile: '8102012654' },
+            { roll: 36, name: 'KANCHAN DANGI', mobile: '916296101626' },
+            { roll: 37, name: 'KARAN THAKUR', mobile: '919832952740' },
+            { roll: 38, name: 'KESHAV BHARTI', mobile: '9931517575' },
+            { roll: 39, name: 'KOMAL KUMARI', mobile: '918935803304' },
+            { roll: 40, name: 'KUNAL PAL', mobile: '919064512902' },
+            { roll: 41, name: 'LAXMI KUMARI', mobile: '8409079953' },
+            { roll: 42, name: 'MANAV SALUJA', mobile: '919832737364' },
+            { roll: 43, name: 'MD FAHAN JAHANGIR', mobile: '8936845434' },
+            { roll: 44, name: 'MD KAIF HUSSAIN', mobile: '6201835245' },
+            { roll: 45, name: 'MEHAR ALIYA', mobile: '8340479957' },
+            { roll: 46, name: 'MOHOR BANERJEE', mobile: '917001754304' },
+            { roll: 47, name: 'MOUSAM MONDAL', mobile: '7319134246' },
+            { roll: 48, name: 'NAMRATA SARKAR', mobile: '7811030140' },
+            { roll: 49, name: 'NEEL SARKAR', mobile: '7004398864' },
+            { roll: 50, name: 'NEHA DAS', mobile: '9641662620' },
+            { roll: 51, name: 'PAMELA ADHIKARI', mobile: '7001690432' },
+            { roll: 52, name: 'PANKAJ KUMAR GOPE', mobile: '7759817001' },
+            { roll: 53, name: 'PARITOSH RUIDAS', mobile: '919775164625' },
+            { roll: 54, name: 'PIYUSH ANANAD', mobile: '7061250183' },
+            { roll: 55, name: 'PRATIK SINGH', mobile: '919942201212' },
+            { roll: 56, name: 'PREMJIT MUKHERJEE', mobile: '7584914497' },
+            { roll: 57, name: 'PRITHA PUITANDY', mobile: '7029044309' },
+            { roll: 58, name: 'PRIYANSHU KUMAR GOPE', mobile: '917319954342' },
+            { roll: 59, name: 'RAJ VISHWAKARMA', mobile: '917908241783' },
+            { roll: 60, name: 'RAJORSHI DEY', mobile: '919883926570' },
+            { roll: 61, name: 'RAYAN KAR', mobile: '919064575418' },
+            { roll: 62, name: 'ROCKY BANERJEE', mobile: '916296355056' },
+            { roll: 63, name: 'RUDRA PANDEY', mobile: '919204950632' },
+            { roll: 64, name: 'RUDRANIL BANERJEE', mobile: '9851521252' },
+            { roll: 65, name: 'RUDRANIL PAUL', mobile: '918436732094' },
+            { roll: 66, name: 'SABYASACHI CHATTERJEE', mobile: '918116608990' },
+            { roll: 67, name: 'SAHIL IQBAL', mobile: '916295948908' },
+            { roll: 68, name: 'SANIA SINGH', mobile: '917369057339' },
+            { roll: 69, name: 'SANJEET YADAV', mobile: '916200921200' },
+            { roll: 70, name: 'SANSUDDHI MUKHOPADHYAYA', mobile: 'N/A' },
+            { roll: 71, name: 'SAPTARSHI MAJI', mobile: '8535983734' },
+            { roll: 72, name: 'SAYAN MISHRA', mobile: '7718737797' },
+            { roll: 73, name: 'SHIVAM MISHRA', mobile: '917781027555' },
+            { roll: 74, name: 'SHREYOSH PAUL', mobile: '919732325713' },
+            { roll: 75, name: 'SHREYOSHI BHATTACHARYA', mobile: '917908979486' },
+            { roll: 76, name: 'SHRISTI DASGUPTA', mobile: '7029665726' },
+            { roll: 77, name: 'SHUVANGI DUTTA', mobile: '7679534200' },
+            { roll: 78, name: 'SIDDHARTH RAJNISH', mobile: '919431158875' },
+            { roll: 79, name: 'SNEHA TIWARI', mobile: '918637509268' },
+            { roll: 80, name: 'SOBHANJEET BHATTACHARYAY', mobile: '9434390639' },
+            { roll: 81, name: 'SOHAM GHOSH', mobile: '9932231995' },
+            { roll: 82, name: 'SOHAM PAUL', mobile: '7047233423' },
+            { roll: 83, name: 'SOURAV KUMAR', mobile: '8864051587' },
+            { roll: 84, name: 'SOURAV PATRA', mobile: '8768191959' },
+            { roll: 85, name: 'SOURODIP ROY', mobile: '919732012478' },
+            { roll: 86, name: 'SOUVIK GHOSH', mobile: '7001970716' },
+            { roll: 87, name: 'SRIJANI CHAKRABORTY', mobile: '917637854030' },
+            { roll: 88, name: 'SRUTI BANERJEE', mobile: '919883069352' },
+            { roll: 89, name: 'SUBHAJEET CHOUDHURY', mobile: '6296413127' },
+            { roll: 90, name: 'SUBHAJEET PRAMANIK', mobile: '919123429195' },
+            { roll: 91, name: 'SUBHROJYOTI DAS', mobile: '917076262596' },
+            { roll: 92, name: 'SUMAN CHATTOPADHYAY', mobile: '7501249588' },
+            { roll: 93, name: 'SURYADEEP DASANDI', mobile: '9308345907' },
+            { roll: 94, name: 'SURYASIS CHATTERJEE', mobile: '917679519335' },
+            { roll: 95, name: 'SUTANNIMA DASGUPTA', mobile: '7908403055' },
+            { roll: 96, name: 'SUYASH SINHA', mobile: '917601999072' },
+            { roll: 97, name: 'TAHSEEN FATMA', mobile: '9832737301' },
+            { roll: 98, name: 'TANISHA PATRA', mobile: '8670950620' },
+            { roll: 99, name: 'TATHAGATA ROY', mobile: '919832221018' },
+            { roll: 100, name: 'VILAKSHNA VIJAYA', mobile: '919508498677' },
+            { roll: 101, name: 'VIVEK KUMAR YADAV', mobile: '9931520315' },
+            { roll: 102, name: 'LUCKY GUPTA', mobile: '8670639583' },
+            { roll: 103, name: 'SAYANTAN MISHRA', mobile: '6295098009' },
+            { roll: 104, name: 'ARITRA GOSWAMI', mobile: '8651828180' },
+            { roll: 105, name: 'RUDRA KESHRI', mobile: 'N/A' },
+            { roll: 106, name: 'SUJOY DEY', mobile: '8327331204' },
+            { roll: 107, name: 'ISHAN BANERJEE', mobile: '6295741640' },
+            { roll: 108, name: 'SHAINA HUSSAIN', mobile: '7908211178' },
+            { roll: 109, name: 'ARYAN PRAKASH SINGH', mobile: '9749799401' },
+            { roll: 110, name: 'SUYASH SINHA', mobile: '917601999072' },
+            { roll: 111, name: 'TAHSEEN FATMA', mobile: '9832737301' },
+            { roll: 112, name: 'TANISHA PATRA', mobile: '8670950620' },
+            { roll: 113, name: 'TATHAGATA ROY', mobile: '919832221018' },
+            { roll: 114, name: 'VILAKSHNA VIJAYA', mobile: '919508498677' },
+            { roll: 115, name: 'VIVEK KUMAR YADAV', mobile: '9931520315' },
+            { roll: 116, name: 'SAGNIK CHAKRABARTI', mobile: '919932720560' },
+            { roll: 117, name: 'ESHA GUPTA', mobile: '6297070488' },
+            { roll: 118, name: 'ASMITA SAMANTA', mobile: '9332090207' },
+            { roll: 119, name: 'PRIYA KUMARI', mobile: '8709884088' },
+            { roll: 120, name: 'SHREYA SARKAR', mobile: '8972421183' },
+            { roll: 121, name: 'SYED ASAD KAMAL', mobile: '9339263114' },
+            { roll: 122, name: 'PRACHI GOEL', mobile: '8918539673' },
+            { roll: 123, name: 'MOHIT CHOUDHARY', mobile: '9851301378' },
+            { roll: 124, name: 'ARGHA SADHU', mobile: '7908274277' },
+            { roll: 125, name: 'SOUMADIP KAR', mobile: '7362914915' },
+            { roll: 126, name: 'INDRANIL MUKHERJEE', mobile: '7811875126' },
+            { roll: 127, name: 'SRAYAN ACHARJEE', mobile: '9832219359' },
+            { roll: 128, name: 'KRITI SINGH', mobile: '9955111343' },
+            { roll: 129, name: 'KUNAL PAL', mobile: '9064512902' },
+            { roll: 130, name: 'DIPTI KUMARI', mobile: '7209375851' },
+            { roll: 131, name: 'DIPAYAN MITRA', mobile: '7602888981' },
+            { roll: 132, name: 'MOHOR BANERJEE', mobile: '7001754304' },
+            { roll: 133, name: 'SAMIYA SINGH', mobile: '7562866654' },
+            { roll: 134, name: 'ZOHAIB ALI', mobile: '8294129356' },
+            { roll: 135, name: 'CHITRITA MONDAL', mobile: '9434578181' },
+            { roll: 136, name: 'ABHISHIKTA MISHRA', mobile: '6294686844' },
+            { roll: 137, name: 'GURJEET KAUR', mobile: '9333133136' },
+            { roll: 138, name: 'NEHA SHARMA', mobile: '9382198097' },
+            { roll: 139, name: 'RIPU KUMAR', mobile: '7324989938' },
+            { roll: 140, name: 'SOUBHIK DEY', mobile: '9679389730' },
+            { roll: 141, name: 'JOYDEEP BANERJEE', mobile: '7908818397' },
+            { roll: 142, name: 'AVIJEET RAJAK', mobile: '9593650048' },
+            { roll: 143, name: 'SHIVAM PANDEY', mobile: '6201914965' },
+            { roll: 144, name: 'KRISHNENDU MONDAL', mobile: '8145121502' },
+            { roll: 145, name: 'SHUBHANG PANDEY', mobile: '9339912066' },
+            { roll: 146, name: 'KOYEL MAJI', mobile: '9434678536' },
+            { roll: 147, name: 'PRIYANSHU RAJ', mobile: '8986315385' },
+            { roll: 148, name: 'RAMIT SHAW', mobile: '6296118385' },
+            { roll: 149, name: 'PORITOSH RUIDAS', mobile: '9775164625' },
+            { roll: 150, name: 'KANCHAN DANGI', mobile: '6296101626' },
+            { roll: 151, name: 'NAITIK GUPTA', mobile: '9153636339' },
+            { roll: 152, name: 'ARITRA BHUI', mobile: '9749112096' },
+            { roll: 153, name: 'NARAYAN DAS', mobile: '8084873987' },
+            { roll: 154, name: 'SUBHAJEET PRAMANIK', mobile: '7061062248' },
+            { roll: 155, name: 'ANIRBAN KUNDU', mobile: '9239222593' },
+            { roll: 156, name: 'DEEPTANSHU BISWAS', mobile: '9832143958' },
+            { roll: 157, name: 'NEHAL KUMAR KESHRI', mobile: '9241435124' },
+            { roll: 158, name: 'SUBHAM DAS', mobile: '9474909086' },
+            { roll: 159, name: 'SHIVAM KUMAR OJHA', mobile: '9341216191' },
+            { roll: 160, name: 'SATYAM KUMAR OJHA', mobile: '9341216191' },
+            { roll: 161, name: 'SMITA MONDAL', mobile: '8840528919' },
+            { roll: 162, name: 'SUMAN MAJI', mobile: '8649800252' },
+            { roll: 163, name: 'ASHUTOSH KUMAR SINGH', mobile: '9631011627' },
+            { roll: 164, name: 'DITANU DAS', mobile: '7903154106' }
+        ];
+
+        const timetables = {
+            1: {
+                'Mon': ['', '', 'CS 101', 'PH 101 SC', '', ],
+                'Tue': ['', 'HU 102 CC', 'M 101 PRD', '', '', ],
+                'Wed': ['', 'M 101 PRD', 'HU 101 KKP', '', '', ],
+                'Thu': ['', 'CS 101', 'PH 101 SC', '', '',  ],
+                'Fri': ['', '', 'HU 101 KKP', '', '', ],
+            },
+            2: {
+                'Mon': ['', 'CS 101', 'PH 101 RS', '', '', ],
+                'Tue': ['', 'HU 101 KKP', '', 'M 101 AU', '', ],
+                'Wed': ['', '', 'M 101 AU', '', '', ],
+                'Thu': ['HU 101 AD', 'CS 101', '', '', '',],
+                'Fri': ['', 'HU 102 CC', 'PH 101 RS', '', '',],
+            }
+        };
+
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const timeSlots = [
+            { start: '09:50', end: '10:30' },
+            { start: '10:40', end: '11:20' },
+            { start: '11:40', end: '12:20' },
+            { start: '12:40', end: '01:20' },
+            { start: '01:40', end: '02:20' },
+        ];
+
+        let currentDate = new Date(); // August 26, 2025; time will update dynamically
+        let currentRoll = null;
+        let interval = null;
+
+        function getTimetable(section) {
+            return timetables[section];
+        }
+
+        function getSection(roll) {
+            return roll <= 90 ? 1 : 2;
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+            document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+            document.getElementById(tabId).classList.add("active");
+            document.querySelector(`nav button[onclick="showTab('${tabId}')"]`).classList.add("active");
+            if (tabId === 'timetable' || tabId === 'student-portal') {
+                updateCurrentClass();
+            }
+            if (tabId !== 'student-portal') {
+                if (interval) clearInterval(interval);
+            }
+        }
+
+        function searchStudent() {
+            let input = document.getElementById("search").value.toLowerCase();
+            let table = document.getElementById("studentTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                let name = rows[i].cells[1].innerText.toLowerCase();
+                let roll = rows[i].cells[0].innerText;
+
+                if (name.includes(input) || roll === input) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+
+        function updateCurrentClass() {
+            const day = days[currentDate.getDay()];
+            const nowMin = currentDate.getHours() * 60 + currentDate.getMinutes();
+
+            document.querySelectorAll('td.current-class').forEach(cell => {
+                cell.classList.remove('current-class');
+                if (cell.querySelector('.class-status')) {
+                    cell.querySelector('.class-status').remove();
+                }
+            });
+
+            const activeTables = document.querySelectorAll('section.active table[id^="timetableSection"], section.active #student-timetable table');
+            activeTables.forEach(table => {
+                let dayRow = null;
+                if (table.parentElement.id.startsWith('timetableSection')) {
+                    dayRow = table.querySelector(`#row-${day}`);
+                } else {
+                    const rows = table.querySelectorAll('tbody tr');
+                    rows.forEach(row => {
+                        if (row.cells[0].innerText === day) {
+                            dayRow = row;
+                        }
+                    });
+                }
+                if (dayRow) {
+                    timeSlots.forEach((slot, index) => {
+                        const [sh, sm] = slot.start.split(':').map(Number);
+                        const [eh, em] = slot.end.split(':').map(Number);
+                        const startMin = sh * 60 + sm;
+                        const endMin = eh * 60 + em;
+                        if (nowMin >= startMin && nowMin < endMin) {
+                            const cell = dayRow.cells[index + 1];
+                            if (cell && cell.innerText.trim() !== '') {
+                                cell.classList.add('current-class');
+                                const timeLeft = Math.floor((endMin - nowMin));
+                                const statusSpan = document.createElement('span');
+                                statusSpan.className = 'class-status';
+                                statusSpan.innerText = `(${timeLeft} min left)`;
+                                cell.appendChild(statusSpan);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function calculateTotalClasses(section) {
+            const startDate = new Date(2025, 7, 4);
+            const timetable = getTimetable(section);
+            let total = 0;
+            let loopDate = new Date(startDate);
+            while (loopDate <= currentDate) {
+                const dayName = days[loopDate.getDay()];
+                const classes = timetable[dayName] || [];
+                if (loopDate < currentDate) {
+                    total += classes.filter(c => c.trim() !== '').length;
+                } else {
+                    const nowMin = currentDate.getHours() * 60 + currentDate.getMinutes();
+                    classes.forEach((c, i) => {
+                        if (c.trim() !== '') {
+                            const [eh, em] = timeSlots[i].end.split(':').map(Number);
+                            const endMin = eh * 60 + em;
+                            if (endMin <= nowMin) {
+                                total++;
+                            }
+                        }
+                    });
+                }
+                loopDate.setDate(loopDate.getDate() + 1);
+            }
+            return total;
+        }
+
+        function showStudentPortal(roll) {
+            const student = studentData.find(s => s.roll == roll);
+            if (!student) return;
+            currentRoll = roll;
+            const section = getSection(roll);
+            document.getElementById('student-name').innerText = student.name;
+
+            // Build timetable
+            const ttData = getTimetable(section);
+            const table = document.createElement('table');
+            const thead = document.createElement('thead');
+            const trHead = document.createElement('tr');
+            ['Day', '09:50-10:30', '10:40-11:20', '11:40-12:20', '12:40-01:20', '01:40-02:20'].forEach(t => {
+                const th = document.createElement('th');
+                th.innerText = t;
+                trHead.appendChild(th);
+            });
+            thead.appendChild(trHead);
+            table.appendChild(thead);
+            const tbody = document.createElement('tbody');
+            ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].forEach(day => {
+                const tr = document.createElement('tr');
+                const tdDay = document.createElement('td');
+                tdDay.innerText = day;
+                tr.appendChild(tdDay);
+                ttData[day].forEach(c => {
+                    const td = document.createElement('td');
+                    td.innerText = c;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            document.getElementById('student-timetable').innerHTML = '';
+            document.getElementById('student-timetable').appendChild(table);
+
+            // Load data
+            let data = JSON.parse(localStorage.getItem(`student_${roll}`)) || { notes: '', attendance: [] };
+            document.getElementById('student-notes').value = data.notes;
+
+            // Show section
+            document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+            document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+            document.getElementById('student-portal').classList.add("active");
+
+            // Update displays
+            updateAttendanceDisplay(section, data);
+            updateCurrentInfo(section);
+
+            // Set interval for updates
+            if (interval) clearInterval(interval);
+            interval = setInterval(() => {
+                currentDate = new Date();
+                updateCurrentClass();
+                updateCurrentInfo(section);
+            }, 1000);
+        }
+
+        function updateAttendanceDisplay(section, data) {
+            const total = calculateTotalClasses(section);
+            const attended = data.attendance.length;
+            const perc = total > 0 ? ((attended / total) * 100).toFixed(2) : 0;
+            document.getElementById('total-classes').innerText = total;
+            document.getElementById('attended-classes').innerText = attended;
+            document.getElementById('attendance-percentage').innerText = perc;
+        }
+
+        function updateCurrentInfo(section) {
+            const dayName = days[currentDate.getDay()];
+            const classesToday = getTimetable(section)[dayName] || [];
+            const nowMin = currentDate.getHours() * 60 + currentDate.getMinutes();
+            let doneToday = 0;
+            let currentClass = 'None';
+            timeSlots.forEach((slot, i) => {
+                const [sh, sm] = slot.start.split(':').map(Number);
+                const [eh, em] = slot.end.split(':').map(Number);
+                const startMin = sh * 60 + sm;
+                const endMin = eh * 60 + em;
+                if (classesToday[i].trim() !== '') {
+                    if (endMin <= nowMin) {
+                        doneToday++;
+                    }
+                    if (nowMin >= startMin && nowMin < endMin) {
+                        currentClass = classesToday[i] + ` (ends in ${endMin - nowMin} min)`;
+                    }
+                }
+            });
+            document.getElementById('done-today').innerText = doneToday;
+            document.getElementById('current-class').innerText = currentClass;
+        }
+
+        function markAttendance() {
+            if (!currentRoll) return;
+            const roll = currentRoll;
+            const section = getSection(roll);
+            let data = JSON.parse(localStorage.getItem(`student_${roll}`)) || { notes: '', attendance: [] };
+            const dayName = days[currentDate.getDay()];
+            const classesToday = getTimetable(section)[dayName] || [];
+            const nowMin = currentDate.getHours() * 60 + currentDate.getMinutes();
+            let currentSlot = -1;
+            timeSlots.forEach((slot, i) => {
+                const [sh, sm] = slot.start.split(':').map(Number);
+                const [eh, em] = slot.end.split(':').map(Number);
+                const startMin = sh * 60 + sm;
+                const endMin = eh * 60 + em;
+                if (nowMin >= startMin && nowMin < endMin && classesToday[i].trim() !== '') {
+                    currentSlot = i;
+                }
+            });
+            if (currentSlot !== -1) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const key = `${dateStr}_${currentSlot}`;
+                if (!data.attendance.includes(key)) {
+                    data.attendance.push(key);
+                    localStorage.setItem(`student_${roll}`, JSON.stringify(data));
+                    updateAttendanceDisplay(section, data);
+                    updateCurrentInfo(section);
+                } else {
+                    alert('Already marked for this class.');
+                }
+            } else {
+                alert('No class is currently going on.');
+            }
+        }
+
+        function saveNotes() {
+            if (!currentRoll) return;
+            const roll = currentRoll;
+            let data = JSON.parse(localStorage.getItem(`student_${roll}`)) || { notes: '', attendance: [] };
+            data.notes = document.getElementById('student-notes').value;
+            localStorage.setItem(`student_${roll}`, JSON.stringify(data));
+            alert('Notes saved.');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const activeTab = document.querySelector('section.active').id;
+            if (activeTab === 'timetable' || activeTab === 'student-portal') {
+                updateCurrentClass();
+                setInterval(updateCurrentClass, 1000);
+            }
+            const studentRows = document.querySelectorAll('#studentTable tbody tr');
+            studentRows.forEach(row => {
+                row.style.cursor = 'pointer';
+                row.addEventListener('click', () => {
+                    const roll = row.cells[0].innerText;
+                    showStudentPortal(roll);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
